@@ -1,0 +1,349 @@
+:stringmode str "$0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ -." {
+  :byte { 4 * VALUE }
+}
+
+:macro text X Y STR {
+  vD := X
+  vE := Y
+  i := STR
+  drawText
+}
+
+:macro drawCharacter REG {
+  if REG == 0 then return
+  v0 := REG
+  drawChar
+}
+
+: drawText
+  load vC
+  drawChar
+  drawCharacter v1
+  drawCharacter v2
+  drawCharacter v3
+  drawCharacter v4
+  drawCharacter v5
+  drawCharacter v6
+  drawCharacter v7
+  drawCharacter v8
+  drawCharacter v9
+  drawCharacter vA
+  drawCharacter vB
+  drawCharacter vC
+  return
+
+: drawChar
+  i := characters
+  i += v0
+  sprite vD vE 4
+  vD += 4
+  return
+
+: waitKeyRelease
+  v0 := 0
+: -
+  if v0 key then jump -
+  v0 += 1
+  if v0 == 16 then return
+  jump -
+
+: main
+  clear
+  text 8  5 menu-item1-str
+  text 8 10 menu-item2-str
+  text 8 15 menu-item3-str
+  text 8 20 menu-item4-str
+  :unpack 0xA menu-entries
+  v2 := 3  # 4 items = index 3
+  jump menu-start
+
+: menu-start
+  :alias cursorX v0
+  :alias cursorY v1
+  :alias numItems v2
+  :alias showing v3
+  :alias temp v4
+  :alias currentItem v5
+  :alias selectedItem v6
+
+  currentItem := 0
+  i := menu-draw-cursor
+  save v1
+  i := menu-choose-load
+  save v1
+  jump menu-draw-cursor
+
+: menu-move-cursor
+  if showing == 1 then sprite cursorX cursorY 2
+  waitKeyRelease
+
+: menu-draw-cursor
+  0 0
+  i += currentItem
+  i += currentItem
+  i += currentItem
+  i += currentItem
+  load cursorY
+  showing := 0
+  delay := showing
+
+  loop
+    temp := delay
+    if temp == 0 begin
+      i := menu-cursor
+      sprite cursorX cursorY 2
+      temp := 10
+      delay := temp
+      temp := 1
+      showing ^= temp
+    end
+
+    temp := 0xE
+    if temp key begin
+      if currentItem != 0 begin
+        currentItem -= 1
+        jump menu-move-cursor
+      end
+    end
+    temp := 0xF
+    if temp key begin
+      if currentItem != numItems begin
+        currentItem += 1
+        jump menu-move-cursor
+      end
+    end
+
+    selectedItem := currentItem
+    temp := 0xA
+    if temp key then jump menu-choose
+
+    temp := 0
+    numItems += 1
+    loop
+      temp += 1
+      if temp key begin
+        selectedItem := temp
+        selectedItem -= 1
+        jump menu-choose
+      end
+    if temp != numItems then again
+    numItems -= 1
+  again
+
+: menu-choose
+  waitKeyRelease
+: menu-choose-load
+  0 0
+  i += selectedItem
+  i += selectedItem
+  i += selectedItem
+  i += selectedItem
+  temp := 2
+  i += temp
+  load v1
+  temp := 0x10
+  v0 |= temp
+  i := menu-choose-jump
+  save v1
+
+: menu-choose-jump
+  0 0
+
+: menu-cursor
+  0b11110000
+  0b11110000
+
+# CHARACTER SPRITES
+: characters
+  0b10000000
+
+
+# Individual characters, some taken from Corax89' test.
+: im0
+  0xE0 0xA0 0xA0 0xE0
+: im1
+  0xC0 0x40 0x40 0xE0
+: im2
+  0xE0 0x20 0xC0 0xE0
+: im3
+  0xE0 0x60 0x20 0xE0
+: im4
+  0xA0 0xE0 0x20 0x20
+: im5
+  0b11100000
+  0b11000000
+  0b00100000
+  0b11000000
+: im6
+  0xE0 0x80 0xE0 0xE0
+: im7
+  0xE0 0x20 0x20 0x20
+: im8
+  0xE0 0xE0 0xA0 0xE0
+: im9
+  0xE0 0xE0 0x20 0xE0
+: imA
+  0x40 0xA0 0xE0 0xA0
+: imB
+  0b11000000
+  0b11100000
+  0b10100000
+  0b11100000
+: imC
+  0b11100000
+  0b10000000
+  0b10000000
+  0b11100000
+: imD
+  0b11000000
+  0b10100000
+  0b10100000
+  0b11000000
+: imE
+  0xE0 0xC0 0x80 0xE0
+: imF
+  0xE0 0x80 0xC0 0x80
+: imG
+  0b01100000
+  0b10000000
+  0b10100000
+  0b01100000
+: imH
+  0b10100000
+  0b11100000
+  0b10100000
+  0b10100000
+: imI
+  0b11100000
+  0b01000000
+  0b01000000
+  0b11100000
+: imJ
+  0b01100000
+  0b00100000
+  0b00100000
+  0b11000000
+: imK
+  0b10100000
+  0b11000000
+  0b10100000
+  0b10100000
+: imL
+  0b10000000
+  0b10000000
+  0b10000000
+  0b11100000
+: imM
+  0b11100000
+  0b11100000
+  0b10100000
+  0b10100000
+: imN
+  0b11000000
+  0b10100000
+  0b10100000
+  0b10100000
+: imO
+  0b11100000
+  0b10100000
+  0b10100000
+  0b11100000
+: imP
+  0b11000000
+  0b10100000
+  0b11000000
+  0b10000000
+: imQ
+  0b01000000
+  0b10100000
+  0b11100000
+  0b01100000
+: imR
+  0b11000000
+  0b10100000
+  0b11000000
+  0b10100000
+: imS
+  0b01100000
+  0b11000000
+  0b00100000
+  0b11000000
+: imT
+  0b11100000
+  0b01000000
+  0b01000000
+  0b01000000
+: imU
+  0b10100000
+  0b10100000
+  0b10100000
+  0b01100000
+: imV
+  0b10100000
+  0b10100000
+  0b10100000
+  0b01000000
+: imW
+  0b10100000
+  0b10100000
+  0b11100000
+  0b11100000
+: imX
+  0xA0 0x40 0xA0 0xA0
+: imY
+  0b10100000
+  0b10100000
+  0b01000000
+  0b01000000
+: imZ
+  0b11100000
+  0b01100000
+  0b10000000
+  0b11100000
+: imSpace
+  0 0 0 0
+: imDash
+  0b00000000
+  0b11100000
+  0b00000000
+  0b00000000
+: imPeriod
+  0b00000000
+  0b00000000
+  0b00000000
+  0b01000000
+
+# Menu item labels
+: menu-item1-str
+  str "ONE" 0
+: menu-item2-str
+  str "TWO" 0
+: menu-item3-str
+  str "THREE" 0
+: menu-item4-str
+  str "FOUR" 0
+
+# Menu positions and jump targets
+: menu-entries
+  6  5 :pointer show-1
+  6 10 :pointer show-2
+  6 15 :pointer show-3
+  6 20 :pointer show-4
+
+# Each item's routine
+: show-1
+  clear
+  text 20 10 menu-item1-str
+  jump menu-draw-cursor
+: show-2
+  clear
+  text 20 10 menu-item2-str
+  jump menu-draw-cursor
+: show-3
+  clear
+  text 20 10 menu-item3-str
+  jump menu-draw-cursor
+: show-4
+  clear
+  text 20 10 menu-item4-str
+  jump menu-draw-cursor
