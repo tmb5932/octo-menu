@@ -69,9 +69,9 @@
 
 : draw-cursor
   xPos := 5
-	yPos := 15
+	yPos := 14
   i := cursorSprite
-  sprite xPos yPos 3   # Draw to point to middle letter
+  sprite xPos yPos 5   # Draw to point to middle letter
   return
 
 : waitKeyRelease
@@ -114,6 +114,8 @@
   0xE0 0x90 0xE0 0x90 0xE0  # end-B 27	Extra A and B here to allow for displaying (Y Z A) and (Z A B) on screen at once
 
 : cursorSprite
-  0b11100000
-	0b11110000
+  0b10000000
+  0b11000000
 	0b11100000
+	0b11000000
+	0b10000000
