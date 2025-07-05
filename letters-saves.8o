@@ -1,0 +1,128 @@
+: main
+	:alias scrollOffset v0
+	:alias drawIndex v1
+	:alias xPos v2
+	:alias yPos v3
+	:alias letterIndex v4
+	:alias temp v9
+	
+	scrollOffset := 1
+	update-screen
+	main-loop
+	clear
+	return
+
+: main-loop
+
+	# Select Letter
+	temp := 0xA
+	# The chosen letters ID is saved in the V0 register
+	if temp key then return
+
+	# Scroll Up
+	temp := 2
+	if temp key begin
+		if scrollOffset > 1 begin
+			scrollOffset -= 1
+		else
+			scrollOffset := 26  # wrap around from 'A' to 'Z' (Actually start-B to end-A, but thats besides the point)
+		end
+		waitKeyRelease
+		update-screen
+	end
+
+	# Scroll Down
+	temp := 5
+	if temp key begin
+		scrollOffset += 1
+		if scrollOffset >= 27 then scrollOffset := 1    # wrap around from 'Z' to 'A' (Actually end-A to start-B, but thats besides the point)
+		waitKeyRelease
+		update-screen
+	end
+
+	jump main-loop
+
+: update-screen
+	clear
+	draw-letters
+	draw-cursor
+	return
+
+: draw-letters
+	drawIndex := 0
+	yPos := 7
+	xPos := 10
+
+: drawloop
+	letterIndex := scrollOffset
+	letterIndex -= 1
+	letterIndex += drawIndex
+
+	if letterIndex >= 28 then return    # shouldn't hit this ever
+
+	i := alphabetSprites
+	i += letterIndex
+	i += letterIndex
+	i += letterIndex
+	i += letterIndex
+	i += letterIndex    # 5 bytes per letter
+
+	sprite xPos yPos 5
+	drawIndex += 1
+	yPos += 7
+
+	if drawIndex < 3 then jump drawloop # Only draw 3 letters on screen
+	return
+
+: draw-cursor
+	xPos := 5
+	yPos := 14
+	i := cursorSprite
+	sprite xPos yPos 5  # Draw to point to middle letter
+	return
+
+: waitKeyRelease
+	v9 := 0
+: -
+	if v9 key then jump -
+	v9 += 1
+	if v9 == 16 then return
+	jump -
+	return
+
+: alphabetSprites
+	0xF0 0x90 0xF0 0x90 0x90    # start-A 0
+	0xE0 0x90 0xE0 0x90 0xE0	# start-B 1
+	0xF0 0x80 0x80 0x80 0xF0	# C 2
+	0xE0 0x90 0x90 0x90 0xE0	# D 3
+	0xF0 0x80 0xF0 0x80 0xF0	# E 4
+	0xF0 0x80 0xF0 0x80 0x80	# F 5
+	0xF0 0x80 0xB0 0x90 0xF0	# G 6
+	0x90 0x90 0xF0 0x90 0x90	# H 7
+	0xF0 0x20 0x20 0x20 0xF0	# I 8
+	0x10 0x10 0x10 0x90 0x60	# J 9
+	0x90 0xA0 0xC0 0xA0 0x90	# K 10
+	0x80 0x80 0x80 0x80 0xF0	# L 11
+	0x90 0xF0 0xF0 0x90 0x90	# M 12
+	0x90 0xD0 0xF0 0xB0 0x90	# N 13
+	0xF0 0x90 0x90 0x90 0xF0	# O 14
+	0xF0 0x90 0xF0 0x80 0x80	# P 15
+	0xF0 0x90 0x90 0xB0 0xD0	# Q 16
+	0xF0 0x90 0xF0 0xA0 0x90	# R 17
+	0xF0 0x80 0xF0 0x10 0xF0	# S 18
+	0xF8 0x20 0x20 0x20 0x20	# T 19
+	0x90 0x90 0x90 0x90 0xF0	# U 20
+	0x90 0x90 0x90 0x90 0x60	# V 21
+	0x90 0x90 0xF0 0xF0 0x90	# W 22
+	0x90 0x90 0x60 0x90 0x90	# X 23
+	0x90 0x90 0x60 0x20 0x20	# Y 24
+	0xF0 0x10 0x60 0x80 0xF0	# Z 25
+	0xF0 0x90 0xF0 0x90 0x90	# end-A 26
+	0xE0 0x90 0xE0 0x90 0xE0	# end-B 27	Extra A and B here to allow for displaying (Y Z A) and (Z A B) on screen at once
+
+: cursorSprite
+	0b10000000
+	0b11000000
+	0b11100000
+	0b11000000
+	0b10000000
