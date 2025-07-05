@@ -7,7 +7,7 @@ The output would then be stored in a specific place in memory, that the outside 
 
 ## Most current version
 Currently, I have a menu that can scroll between the letters of the alphabet, and a cursor to display what is currently being pointed at.
-https://johnearnest.github.io/Octo/index.html?key=JmeZnYmu
+https://johnearnest.github.io/Octo/index.html?key=eIk7415J
 
 ### Next Iterations Improvements:
 - Save the current letters ID into memory when selected
