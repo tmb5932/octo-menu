@@ -9,13 +9,15 @@
 	:alias temp v9
 	:alias temp2 vA
 
+	:const SCROLL_UP_KEY 2
+	:const SCROLL_DOWN_KEY 5
 	:const TITLE_LEN 11
-	:const lenLoc 0x519
-	:const dataLoc 0x520
+	:const LEN_LOC 0x519
+	:const DATA_LOC 0x520
 
 	load-options
 
-	i := lenLoc
+	i := LEN_LOC
 	load byte
 	optionsLength := byte
 	optionsLength -= 1
@@ -25,6 +27,7 @@
 
 	update-screen
 	main-loop
+	clear
 	return
 
 : main-loop
@@ -35,7 +38,7 @@
 	if temp key then return
 
 	# Scroll Up
-	temp := 2
+	temp := SCROLL_UP_KEY
 	if temp key begin
 		if scrollOffset > 0 begin
 			scrollOffset -= 1
@@ -47,7 +50,7 @@
 	end
 
 	# Scroll Down
-	temp := 5
+	temp := SCROLL_DOWN_KEY
 	if temp key begin
 		scrollOffset += 1
 		if scrollOffset > optionsLength then scrollOffset := 0    # wrap around from end to start
@@ -70,7 +73,7 @@
 	letterCount := 0
 
 : drawloop
-	i := dataLoc
+	i := DATA_LOC
 
 	# multiply drawn options and start ID by 11 (each word is 11 chars long)
 	temp := drawIndex
@@ -156,31 +159,37 @@
 
 : load-options
 	# Start of imported data is 0x500
-	i := lenLoc
+	i := LEN_LOC
 	v0 := 7
 	save v0
 	
-	
-	i := dataLoc
+	i := DATA_LOC
 
+	# Save JAZZ
   v0 := 0x4A  v1 := 0x41  v2 := 0x5A  v3 := 0x5A  v4 := 0x20  v5 := 0x20  v6 := 0x20  v7 := 0x20  v8 := 0x20  v9 := 0x20  va := 0x20
   save va
 
+	# Save STRATEGY
   v0 := 0x53  v1 := 0x54  v2 := 0x52  v3 := 0x41  v4 := 0x54  v5 := 0x45  v6 := 0x47  v7 := 0x59  v8 := 0x20  v9 := 0x20  va := 0x20
   save va
 
+	# Save DREAM
   v0 := 0x44  v1 := 0x52  v2 := 0x45  v3 := 0x41  v4 := 0x4D  v5 := 0x20  v6 := 0x20  v7 := 0x20  v8 := 0x20  v9 := 0x20  va := 0x20
   save va
 
+	# Save PERFECTION
   v0 := 0x50  v1 := 0x45  v2 := 0x52  v3 := 0x46  v4 := 0x45  v5 := 0x43  v6 := 0x54  v7 := 0x49  v8 := 0x4F  v9 := 0x4E  va := 0x20
   save va
 
+	# Save KNOWLEDGE
   v0 := 0x4B  v1 := 0x4E  v2 := 0x4F  v3 := 0x57  v4 := 0x4C  v5 := 0x45  v6 := 0x44  v7 := 0x47  v8 := 0x45  v9 := 0x20  va := 0x20
   save va
 
+	# Save UNDERSTOOD
   v0 := 0x55  v1 := 0x4E  v2 := 0x44  v3 := 0x45  v4 := 0x52  v5 := 0x53  v6 := 0x54  v7 := 0x4F  v8 := 0x4F  v9 := 0x44  va := 0x20
   save va
 
+	# Save WORLD
   v0 := 0x57  v1 := 0x4F  v2 := 0x52  v3 := 0x4C  v4 := 0x44  v5 := 0x20  v6 := 0x20  v7 := 0x20  v8 := 0x20  v9 := 0x20  va := 0x20
 	save va
 
