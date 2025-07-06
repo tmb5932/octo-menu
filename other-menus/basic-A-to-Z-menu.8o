@@ -1,3 +1,4 @@
+# This menu allows you to scroll up and down in a menu of items that are predetermined
 : main
 	:alias scrollOffset v0
 	:alias drawIndex v1

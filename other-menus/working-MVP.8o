@@ -1,3 +1,4 @@
+# 
 : main
 	:alias byte v0
 	:alias scrollOffset v1
@@ -11,6 +12,7 @@
 
 	:const SCROLL_UP_KEY 2
 	:const SCROLL_DOWN_KEY 5
+	:const SELECT_KEY 0xA
 	:const TITLE_LEN 11
 	:const LEN_LOC 0x519
 	:const DATA_LOC 0x520
@@ -33,7 +35,7 @@
 : main-loop
 
 	# Select Option
-	temp := 0xA
+	temp := SELECT_KEY
 	# The chosen options ID is saved in the V5 register
 	if temp key then return
 
