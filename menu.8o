@@ -3,46 +3,52 @@
 	:alias scrollOffset v1
 	:alias xPos v2
 	:alias yPos v3
-	:alias drawIndex v6
-	:alias letterCount v7
-	:alias optionsLength v8
-	:alias temp v9
-	:alias temp2 vA
+	:alias drawIndex v4
+	:alias letterCount v5
+	:alias optionsLength v6
+	:alias temp v7
 
-	:const TITLE_LEN 11
+	:const SELECT_KEY 0xA
+	:const SCROLL_UP_KEY 2
+	:const SCROLL_DOWN_KEY 5
 	:const dataLoc 0x500
 
+	# Count number of options loaded
 	count-options
 
-  optionsLength -= 1
+  optionsLength -= 1	# Swap counter to 0-index
+	
+	# Ensure zero'ed
 	byte := 0
-
 	scrollOffset := 0
 
+	# Set initial visuals
 	update-screen
+	
+	# Loop
 	main-loop
 	return
 
 : main-loop
-	# Select Option
-	temp := 0xA
+	# Select Currently Hovered Option
+	temp := SELECT_KEY
 	# The chosen options ID is saved in the V1 register
 	if temp key then return
 
 	# Scroll Up
-	temp := 2
+	temp := SCROLL_UP_KEY
 	if temp key begin
 		if scrollOffset > 0 begin
 			scrollOffset -= 1
 		else
-			scrollOffset := optionsLength  # wrap around from start to end
+			scrollOffset := optionsLength	# wrap around from start to end
 		end
 		wait-key-release
 		update-screen
 	end
 
 	# Scroll Down
-	temp := 5
+	temp := SCROLL_DOWN_KEY
 	if temp key begin
 		scrollOffset += 1
 		if scrollOffset > optionsLength then scrollOffset := 0    # wrap around from end to start
@@ -57,7 +63,7 @@
 	draw-options
 	draw-cursor
 	return
-	
+
 : draw-options
 	drawIndex := 0
 	yPos := 7
@@ -67,11 +73,12 @@
 : draw-loop
 	i := dataLoc
 
-	# multiply drawn options and start ID by 11 (each word is 11 chars long) to get position of current letter
+	# go to the (scrollOffset + drawIndex)th ACK byte to find start of next option
 	temp := drawIndex
 	temp += scrollOffset
 
-	if scrollOffset == 0 begin	# If drawing first option, there is no previous, so need to have blank top row
+	# If drawing first option, there is no previous, so need to have blank top row
+	if scrollOffset == 0 begin
 		if drawIndex == 0 begin
 			xPos := 10
 			yPos += 7
@@ -83,47 +90,57 @@
 			temp -= 1
 		end
 	end
-	
-	if scrollOffset != 0 then temp -= 1		# Need to -1 because scrollOffset points to middle word
 
-	temp2 := TITLE_LEN
-: mult-loop
-  if temp == 0 then jump finished-mult
-  i += temp2
-  temp -= 1
-  jump mult-loop
-: finished-mult
+	if scrollOffset != 0 then temp -= 1	# Need to -1 because scrollOffset points to middle word
+
+: find-option-loop
+  if temp == 0 then jump finished-find-loop
+	load byte
+	if byte == 0x06 then temp -= 1	# Found end of word
+	if byte == 0x00 then return	# Found end of options
+  jump find-option-loop
+: finished-find-loop
 	
-	i += letterCount # add offset for letters written in current word
+	i += letterCount	# add offset for letters written in current option
 
 	load byte
 
-	if byte == 0x00 then return		# End of list
-	
-	if letterCount >= 11 begin
+	if byte == 0x00 then return	# End of list
+
+	if byte == 0x06 begin	# ACK bit to seperate options
 		xPos := 10
 		yPos += 7
 		letterCount := 0
 		drawIndex += 1
-		if drawIndex < 3 then jump draw-loop # Only draw 3 options on screen
+		if drawIndex < 3 then jump draw-loop	# Only draw 3 options on screen
 		return
 	end
 
-	
-	if byte == 0x20 begin		# Space slot
+	if byte == 0x20 begin	# Space character
 		letterCount += 1
 		xPos += 3
 		jump draw-loop
 	end
+	
+	# Catch any possible issues with ascii character
+	if byte >= 97 begin
+		if byte <= 122 then byte -= 32	# If it is a lowercase letter, turn into uppercase version
+	end
 
-	byte -= 32         # Convert ASCII to 0–58 index
+	if byte == 95 then byte := 45	# Turn underscores (_) into dashes (-)
+
+	if byte < 32 then byte := 63	# If unsupported char, set to '?'
+
+	if byte > 90 then byte := 63	# If unsupported char, set to '?'
+
+	byte -= 32	# Convert ASCII to space (32) == 0 index (0-59)
 
 	i := asciiSprites
 	i += byte
 	i += byte
 	i += byte
 	i += byte
-	i += byte		# 5 bytes per letter
+	i += byte	# 5 bytes per letter
 
 	sprite xPos yPos 5
 
@@ -139,6 +156,7 @@
 	sprite xPos yPos 5  # Draw to point to middle option
 	return
 
+# function to wait for key release to avoid zooming through list (checks every key)
 : wait-key-release
 	temp := 0
 : -
@@ -151,19 +169,15 @@
 : count-options
 	optionsLength := 0
 	i := dataLoc
-	temp := TITLE_LEN
-  temp -= 1
 
 : count-loop
 	load byte
-	if byte == 0 then return
-	
-	optionsLength += 1
-	i += temp
+	if byte == 0x00 then return	# End of options
+	if byte == 0x06 then optionsLength += 1	# Delimiter character, end of a option
 
 	jump count-loop
-
-
+	
+# Sprites for each ascii character 32 to 90
 : asciiSprites
 	0x00 0x00 0x00 0x00 0x00	# space
 	0x20 0x20 0x20 0x00 0x20	# !
@@ -197,7 +211,7 @@
 	0xE0 0x00 0xE0 0x00 0x00	# =
 	0x40 0x20 0x40 0x00 0x00	# >
 	0xE0 0x20 0x40 0x00 0x40	# ? 
-	0x00 0x00 0x60 0x00 0x00  # @ but currently -
+	0x00 0x00 0x60 0x00 0x00	# @ but currently -
 	0xF0 0x90 0xF0 0x90 0x90	# A
 	0xE0 0x90 0xE0 0x90 0xE0	# B
 	0xF0 0x80 0x80 0x80 0xF0	# C
