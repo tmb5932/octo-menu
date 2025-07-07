@@ -12,7 +12,7 @@
 	:const SELECT_KEY 0xA
 	:const SCROLL_UP_KEY 2
 	:const SCROLL_DOWN_KEY 5
-	:const dataLoc 0x650
+	:const dataLoc 0x600
 
 	# Load example data into memory for web-viewable example
 	load-options
@@ -46,7 +46,7 @@
 		if scrollOffset > 0 begin
 			scrollOffset -= 1
 		else
-			scrollOffset := optionsLength  # wrap around from start to end
+			scrollOffset := optionsLength	# wrap around from start to end
 		end
 		wait-key-release
 		update-screen
@@ -56,7 +56,7 @@
 	temp := SCROLL_DOWN_KEY
 	if temp key begin
 		scrollOffset += 1
-		if scrollOffset > optionsLength then scrollOffset := 0    # wrap around from end to start
+		if scrollOffset > optionsLength then scrollOffset := 0	# wrap around from end to start
 		wait-key-release
 		update-screen
 	end
@@ -177,7 +177,7 @@
 
 : count-loop
 	load byte
-	if byte == 0x00 then return		# End of options
+	if byte == 0x00 then return	# End of options
 	if byte == 0x06 then optionsLength += 1	# Delimiter character, end of a option
 
 	jump count-loop
@@ -212,7 +212,7 @@
 : show-result
 	clear
 	yPos := 14
-	xPos := 5
+	xPos := 2
 	letterCount := 0
 
 	# Write CHOSE to preface the option chosen
@@ -233,7 +233,7 @@
 	i += byte
 	i += byte
 	i += byte
-	i += byte		# 5 bytes per letter
+	i += byte	# 5 bytes per letter
 
 	sprite xPos yPos 5
 
@@ -244,7 +244,7 @@
 	i += byte
 	i += byte
 	i += byte
-	i += byte		# 5 bytes per letter
+	i += byte	# 5 bytes per letter
 
 	sprite xPos yPos 5
 
@@ -255,7 +255,7 @@
 	i += byte
 	i += byte
 	i += byte
-	i += byte		# 5 bytes per letter
+	i += byte	# 5 bytes per letter
 
 	sprite xPos yPos 5
 
@@ -266,7 +266,7 @@
 	i += byte
 	i += byte
 	i += byte
-	i += byte		# 5 bytes per letter
+	i += byte	# 5 bytes per letter
 
 	sprite xPos yPos 5
 
@@ -300,6 +300,12 @@
 		jump draw-result-loop
 	end
 	
+	if xPos > 54 begin	# If line is too long
+		i := ellipsis
+		sprite xPos yPos 5
+		return
+	end
+	
 	# Catch any possible issues with ASCII character
 	if byte >= 97 begin
 		if byte <= 122 then byte -= 32	# If it is a lowercase letter, turn into uppercase version
@@ -318,7 +324,7 @@
 	i += byte
 	i += byte
 	i += byte
-	i += byte		# 5 bytes per letter
+	i += byte	# 5 bytes per letter
 
 	sprite xPos yPos 5
 
@@ -389,6 +395,9 @@
 	0x90 0x90 0x60 0x90 0x90	# X
 	0x90 0x90 0x60 0x20 0x20	# Y
 	0xF0 0x10 0x60 0x80 0xF0	# Z
+	
+: ellipsis
+	0x00 0x00 0x00 0x00 0xA8	# ...
 
 : cursorSprite
 	0b10000000
