@@ -2,7 +2,7 @@
 This project contains a ROM for a Chip8 emulator that allows for selecting a game to be played. This will obviously require support from the outside language, as the Chip8 emulator has no capabilities to load files or similar on its own.
 
 ### Web Tester with Preloaded Example Titles
-
+Controls: on normal QWERTY keyboard, 2 to go up, W to go down, Z to select option.
 https://johnearnest.github.io/Octo/index.html?key=FIeddw_e
 
 ### Secondary Use
