@@ -10,8 +10,8 @@
 	:alias temp v7
 
 	:const SELECT_KEY 0xA
-	:const SCROLL_UP_KEY 2
-	:const SCROLL_DOWN_KEY 5
+	:const SCROLL_UP_KEY 0x2
+	:const SCROLL_DOWN_KEY 0x5
 	:const dataLoc 0x600
 
 	# Load example data into memory for web-viewable example
@@ -26,13 +26,16 @@
 	byte := 0
 	scrollOffset := 0
 
-	# Set initial visuals
-	update-screen
-	
-	# Loop
-	main-loop
-	show-result
-	return
+: web-loop
+		wait-key-release # to avoid instantly skipping to results
+		update-screen
+		main-loop
+		wait-key-release # to avoid instantly skipping results
+		show-result
+		temp := SELECT_KEY
+		loop
+			if temp key then jump web-loop
+		again
 
 : main-loop
 	# Select Currently Hovered Option
