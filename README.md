@@ -2,7 +2,7 @@
 This project contains a ROM for a Chip8 emulator that allows for selecting a game to be played. This will obviously require support from the outside language, as the Chip8 emulator has no capabilities to load files or similar on its own.
 
 ### Web Tester with Preloaded Example Titles
-https://johnearnest.github.io/Octo/index.html?key=fNUPLW2p
+https://johnearnest.github.io/Octo/index.html?key=qchHNfxa
 
 ### Secondary Use
 I did not realize this at the start, but this ROM could be used to select anything, from any sort of list. As long as the options are able to be loaded into memory before running the ROM, a selection could be made.
@@ -20,14 +20,14 @@ Version has
 - Selected option's ID is left in V1 for access
 - Up to 11 characters in each option name
 - Takes ASCII characters stored in memory and converts to sprite characters (currently supports ascii characters 32 to 90)
-- All option names MUST be 11 characters long, so pad with spaces if it isn't...
 - Wraps. You can't see the top before pressing down again, but going past bottom will put you at top
 
-https://johnearnest.github.io/Octo/index.html?key=fNUPLW2p
+https://johnearnest.github.io/Octo/index.html?key=qchHNfxa
 
 ## Requirements
 The only requirements to do this is to have a list of the games to be options to load it in, and to have the ability to have the rom close the emulator. Although a bit abnormal, especially for emulators, giving support for returning from the main function in the ROM is a good way to do this.
 
+**All Titles NEED to be 11 characters long, so pad with spaces if necessary! Also all Titles NEED to be ALL CAPS!**
 
 ### Example of Loading in Game Names
 To load the game data into the chip8 might look something like this
@@ -88,7 +88,7 @@ if return_value == EXIT_ROM:
 
 - Title length
 
-    All the game/option titles need to be exactly 11 characters long. I tested out other ways, such as a delitimeter, but it was too complex. Possibly a future improvement.
+    All the game/option titles need to be exactly 11 characters long. I tested out other ways, such as a delitimeter, but I was unable to figure out a way at the time. Possibly a future improvement.
 
 ## Notes
 I know this would have been simpler to do entirely in a programming language, but I created a Chip8 emulator and thought it would be cool to make my own ROM. So, instead of creating another Snake ROM, which I'm sure dozens of others if not more have done, I made this.
