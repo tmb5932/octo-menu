@@ -90,5 +90,8 @@ if return_value == EXIT_ROM:
 ## Notes
 I know this would have been simpler to do entirely in a programming language, but I created a Chip8 emulator and thought it would be cool to make my own ROM. So, instead of creating another Snake ROM, which I'm sure dozens of others if not more have done, I made this.
 
+Check out [John Earnest](https://github.com/JohnEarnest), as it was through his [Octo IDE](https://johnearnest.github.io/Octo/) that this was all possible.
+
+
 ## Author
 Travis Brown (tmb5932)
