@@ -2,7 +2,7 @@
 This project contains a ROM for a Chip8 emulator that allows for selecting a game to be played. This will obviously require support from the outside language, as the Chip8 emulator has no capabilities to load files or similar on its own.
 
 ### Web Tester with Preloaded Example Titles
-Controls: on normal QWERTY keyboard, 2 to go up, W to go down, Z to select option.
+
 https://johnearnest.github.io/Octo/index.html?key=FIeddw_e
 
 ### Secondary Use
@@ -24,6 +24,9 @@ Version has
 - Takes ASCII characters stored in memory and converts to sprite characters (currently supports ascii characters 32 to 90)
 - Lowercase ASCII letters are turned into uppercase versions
 - Wraps. You can't see the top before pressing down again, but going past bottom will put you at top
+
+### Controls
+On normal QWERTY keyboards, 2 to go up, W to go down, and Z to select option.
 
 https://johnearnest.github.io/Octo/index.html?key=FIeddw_e
 
