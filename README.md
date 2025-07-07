@@ -2,7 +2,7 @@
 This project contains a ROM for a Chip8 emulator that allows for selecting a game to be played. This will obviously require support from the outside language, as the Chip8 emulator has no capabilities to load files or similar on its own.
 
 ### Web Tester with Preloaded Example Titles
-https://johnearnest.github.io/Octo/index.html?key=_x8YMFr2
+https://johnearnest.github.io/Octo/index.html?key=xgVSIJP-
 
 ### Secondary Use
 I did not realize this at the start, but this ROM could be used to select anything, from any sort of list. As long as the options are able to be loaded into memory before running the ROM, a selection could be made.
@@ -24,7 +24,7 @@ Version has
 - Lowercase ASCII letters are turned into uppercase versions
 - Wraps. You can't see the top before pressing down again, but going past bottom will put you at top
 
-https://johnearnest.github.io/Octo/index.html?key=_x8YMFr2
+https://johnearnest.github.io/Octo/index.html?key=xgVSIJP-
 
 ## Requirements
 The only requirements to do this is to have a list of the games to be options to load it in, and to have the ability to have the rom close the emulator. Although a bit abnormal, especially for emulators, giving support for returning from the main function in the ROM is a good way to do this.
