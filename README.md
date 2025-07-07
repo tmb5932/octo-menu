@@ -6,6 +6,10 @@ I did not realize this at the start, but this ROM could be used to select anythi
 
 Although if trying to just select from a unchanging list, modifying the basic-A-to-Z.8o menu in the other-menus folder may be better, as no pre-loading of memory needs to be done.
 
+## Web browser Example
+
+https://johnearnest.github.io/Octo/index.html?key=A9G51vSU
+
 ## The Goal
 I wanted to create a menu in entirely Octo (Chip8 assembly language), that can display a list of games to be played, allow the user to scroll through it, and make a selection.
 
