@@ -9,9 +9,9 @@
 	:alias optionsLength v6
 	:alias temp v7
 
-	:const SELECT_KEY 0xA
-	:const SCROLL_UP_KEY 0x2
-	:const SCROLL_DOWN_KEY 0x5
+	:const SELECT_KEY 9
+	:const SCROLL_UP_KEY 5
+	:const SCROLL_DOWN_KEY 8
 	:const dataLoc 0x600
 
 	# Load example data into memory for web-viewable example
@@ -32,7 +32,7 @@
 		main-loop
 		wait-key-release # to avoid instantly skipping results
 		show-result
-		temp := SELECT_KEY
+		temp := 9
 		loop
 			if temp key then jump web-loop
 		again
@@ -215,7 +215,7 @@
 : show-result
 	clear
 	yPos := 14
-	xPos := 2
+	xPos := 5
 	letterCount := 0
 
 	# Write CHOSE to preface the option chosen
@@ -371,7 +371,7 @@
 	0xE0 0x00 0xE0 0x00 0x00	# =
 	0x40 0x20 0x40 0x00 0x00	# >
 	0xE0 0x20 0x40 0x00 0x40	# ? 
-	0x00 0x00 0x60 0x00 0x00  # @ but currently -
+	0x70 0x88 0xA8 0x98 0x60	# @
 	0xF0 0x90 0xF0 0x90 0x90	# A
 	0xE0 0x90 0xE0 0x90 0xE0	# B
 	0xF0 0x80 0x80 0x80 0xF0	# C
