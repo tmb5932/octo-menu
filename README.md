@@ -23,7 +23,7 @@ Version has
 - Allows for varying option name length, names delimited in memory by 0x06 (ACK) byte
 - Takes ASCII characters stored in memory and converts to sprite characters (currently supports ascii characters 32 to 90)
 - Lowercase ASCII letters are turned into uppercase versions
-- Wraps. You can't see the top before pressing down again, but going past bottom will put you at top
+- Wraps. You can't see the top before pressing down again, but going past bottom will put you at top, and vice versa.
 
 ### Controls
 On normal QWERTY keyboards, 2 to go up, W to go down, and Z to select option.
@@ -96,6 +96,22 @@ I know this would have been simpler to do entirely in a programming language, bu
 
 Check out [John Earnest](https://github.com/JohnEarnest), as it was through his [Octo IDE](https://johnearnest.github.io/Octo/) that this was all possible.
 
+## Older Versions
+#### The alphabet scroller: The first try, and a feasability test of this whole idea.
+
+- https://johnearnest.github.io/Octo/index.html?key=eIk7415J
+
+#### The initial MVP: The first working version where I had dynamic size of the options list
+
+- https://johnearnest.github.io/Octo/index.html?key=EakGWkqT
+
+#### Version 1.0: Cleaned up MVP for release
+
+- https://johnearnest.github.io/Octo/index.html?key=qchHNfxa
+
+#### Version 2.0: Optimized memory formatting to allow much longer lists, and added confirmation screen to the web-example
+
+- https://johnearnest.github.io/Octo/index.html?key=FIeddw_e
 
 ## Author
 Travis Brown (tmb5932)
