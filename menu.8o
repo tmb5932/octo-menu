@@ -1,26 +1,31 @@
 : main
 	:alias byte v0
-	:alias scrollOffset v1
+	:alias selected v1
 	:alias xPos v2
 	:alias yPos v3
 	:alias drawIndex v4
 	:alias letterCount v5
 	:alias optionsLength v6
 	:alias temp v7
+	:alias temp2 v8
+	:alias offset v9
+	:alias offsetMultiple vA
 
 	:const SELECT_KEY 0xA
 	:const SCROLL_UP_KEY 2
-	:const SCROLL_DOWN_KEY 5
+	:const SCROLL_DOWN_KEY 8
 	:const dataLoc 0x500
+	:const optionSeperator 0x06
+	:const endOfOptions 0x00
 
 	# Count number of options loaded
 	count-options
 
-  optionsLength -= 1	# Swap counter to 0-index
+  optionsLength -= 1 # Swap counter to 0-index
 	
 	# Ensure zero'ed
 	byte := 0
-	scrollOffset := 0
+	selected := 0
 
 	# Set initial visuals
 	update-screen
@@ -38,10 +43,10 @@
 	# Scroll Up
 	temp := SCROLL_UP_KEY
 	if temp key begin
-		if scrollOffset > 0 begin
-			scrollOffset -= 1
+		if selected > 0 begin
+			selected -= 1
 		else
-			scrollOffset := optionsLength	# wrap around from start to end
+			selected := optionsLength  # wrap around from start to end
 		end
 		wait-key-release
 		update-screen
@@ -50,8 +55,8 @@
 	# Scroll Down
 	temp := SCROLL_DOWN_KEY
 	if temp key begin
-		scrollOffset += 1
-		if scrollOffset > optionsLength then scrollOffset := 0    # wrap around from end to start
+		selected += 1
+		if selected > optionsLength then selected := 0	# wrap around from end to start
 		wait-key-release
 		update-screen
 	end
@@ -69,16 +74,53 @@
 	yPos := 7
 	xPos := 10
 	letterCount := 0
-
-: draw-loop
 	i := dataLoc
 
-	# go to the (scrollOffset + drawIndex)th ACK byte to find start of next option
+: draw-loop
+	# If this is first cycle in drawing screen
+	if drawIndex != 0 then jump end-draw-prep
+	if letterCount != 0 then jump end-draw-prep
+
+	# Reset offset
+	offset := 0
+	offsetMultiple := 0
+
+	if selected == 0 then jump end-draw-prep
+	temp := selected
+	temp -= 1
+
+: find-preload-loop
+	if temp == 0 then jump end-draw-prep
+	load byte
+	if offset != 255 then jump no-overflow
+	offset := 0
+	offsetMultiple += 1
+: no-overflow
+	offset += 1
+	if byte == optionSeperator then temp -= 1	# Found end of word
+	if byte == endOfOptions then return	# Found end of options
+	jump find-preload-loop
+
+: end-draw-prep
+
+	i := dataLoc
+
+	temp := offsetMultiple
+	temp2 := 255
+: multiply-loop
+	if temp == 0 then jump multiply-end
+	i += temp2
+	temp -= 1
+	jump multiply-loop
+: multiply-end
+
+	i += offset
+
+	# go to the drawIndex'th ACK byte to find start of next option
 	temp := drawIndex
-	temp += scrollOffset
 
 	# If drawing first option, there is no previous, so need to have blank top row
-	if scrollOffset == 0 begin
+	if selected == 0 begin
 		if drawIndex == 0 begin
 			xPos := 10
 			yPos += 7
@@ -86,28 +128,24 @@
 			drawIndex += 1
 			jump draw-loop
 		end
-		if drawIndex >= 1 begin
-			temp -= 1
-		end
+		temp -= 1
 	end
 
-	if scrollOffset != 0 then temp -= 1	# Need to -1 because scrollOffset points to middle word
-
 : find-option-loop
-  if temp == 0 then jump finished-find-loop
+  if temp == 0 then jump finished-option-loop
 	load byte
-	if byte == 0x06 then temp -= 1	# Found end of word
-	if byte == 0x00 then return	# Found end of options
+	if byte == optionSeperator then temp -= 1
+	if byte == endOfOptions then return
   jump find-option-loop
-: finished-find-loop
-	
+: finished-option-loop
+
 	i += letterCount	# add offset for letters written in current option
 
 	load byte
+	
+	if byte == endOfOptions then return	# End of list
 
-	if byte == 0x00 then return	# End of list
-
-	if byte == 0x06 begin	# ACK bit to seperate options
+	if byte == optionSeperator begin
 		xPos := 10
 		yPos += 7
 		letterCount := 0
@@ -121,7 +159,7 @@
 		xPos += 3
 		jump draw-loop
 	end
-	
+
 	# Catch any possible issues with ascii character
 	if byte >= 97 begin
 		if byte <= 122 then byte -= 32	# If it is a lowercase letter, turn into uppercase version
@@ -140,7 +178,7 @@
 	i += byte
 	i += byte
 	i += byte
-	i += byte	# 5 bytes per letter
+	i += byte		# 5 bytes per letter
 
 	sprite xPos yPos 5
 
@@ -172,8 +210,8 @@
 
 : count-loop
 	load byte
-	if byte == 0x00 then return	# End of options
-	if byte == 0x06 then optionsLength += 1	# Delimiter character, end of a option
+	if byte == endOfOptions then return	# End of options
+	if byte == optionSeperator then optionsLength += 1
 
 	jump count-loop
 	
@@ -211,7 +249,7 @@
 	0xE0 0x00 0xE0 0x00 0x00	# =
 	0x40 0x20 0x40 0x00 0x00	# >
 	0xE0 0x20 0x40 0x00 0x40	# ? 
-	0x70 0x88 0xA8 0x98 0x60	# @
+	0x70 0x88 0xA8 0x98 0x60  # @
 	0xF0 0x90 0xF0 0x90 0x90	# A
 	0xE0 0x90 0xE0 0x90 0xE0	# B
 	0xF0 0x80 0x80 0x80 0xF0	# C
